@@ -43,9 +43,12 @@ The project is split into multiple files to illustrate modularity and keep separ
 7. Import the XML configuration via the GUI at `https://<firewall_mgmt_public_ip>`: log in with username `admin` and the password set in Step 5, go to **Device > Setup > Operations > Import Named Configuration Snapshot**, upload your XML file, load, and commit (note that after the commit, the admin password will be reset to `2Plus2cabbage!`).
 8. Access the Windows Server via RDP: ensure your XML configuration includes a NAT rule to forward RDP to `10.1.1.20`, use the untrust public IP (`terraform output firewall_untrust_public_ip`), username `opc`, and initial password from OCI Console (**Compute > Instances > [select instance] > Resources > Instance Access > Show Initial Password**).
 9. Verify connectivity from the Windows Server: open Command Prompt or PowerShell, test internet access with `ping google.com`, confirm connectivity is successful.
-10. To remove all resources, run `terraform destroy` (type `yes`).
+
+## Clean Up Resources
+1. Reset the trust subnet route table to default in the OCI Console under **Networking > Virtual Cloud Networks > [your VCN] > Subnets > [trust subnet] > Edit**: set the route table to the VCN’s default route table, then save changes.
+2. Run `terraform destroy` to remove all resources (type `yes`).
 
 ## Potential costs and licensing
 - The resources deployed using this Terraform configuration should generally incur minimal to no costs, provided they are terminated promptly after creation.
-- It is important to fully understand your cloud provider's billing structure, trial periods, and any potential costs associated with the deployment of resources in public cloud environments.
+- It is important to understand your cloud provider's billing structure, trial periods, and any potential costs associated with the deployment of resources in public cloud environments.
 - You are also responsible for any applicable software licensing or other charges that may arise from the deployment and usage of these resources.
