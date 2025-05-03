@@ -1,6 +1,6 @@
 <img align="right" width="150" src="https://github.com/2plus2cabbage/2plus2cabbage/blob/main/images/2plus2cabbage.png">
 
-<img src="https://github.com/2plus2cabbage/2plus2cabbage/blob/main/images/oci-paloalto-base.png" alt="oci-paloalto-base" width="300" align="left">
+<img src="https://github.com/2plus2cabbage/2plus2cabbage/blob/main/images/oci-base.png" alt="oci-base" width="300" align="left">
 <br clear="left">
 
 # OCI Firewall and Windows Server Terraform Deployment
@@ -38,9 +38,9 @@ The project is split into multiple files to illustrate modularity and keep separ
 2. Update `terraform.tfvars` with OCI credentials, firewall image OCID, SSH public key, and your public IP in `my_public_ip`.
 3. Run `terraform init`, then (optionally) `terraform plan` to preview changes, then `terraform apply` (type `yes`).
 4. Get the management public IP from the `firewall_mgmt_public_ip` output on the screen, or run `terraform output firewall_mgmt_public_ip`, or check in the OCI Console under **Compute > Instances**.
-5. SSH to the firewall management interface using `ssh -i <private-key-file> admin@<firewall_mgmt_public_ip>`, then optionally change the admin password for GUI access: enter configuration mode with `configure`, set password with `set mgt-config users admin password`, commit with `commit`, and exit with `exit`.
+5. SSH to the firewall management interface using `ssh -i <private-key-file> admin@<firewall_mgmt_public_ip>`, then change the admin password for GUI access: enter configuration mode with `configure`, set password with `set mgt-config users admin password`, commit with `commit`, and exit with `exit`.
 6. Update `MY-PUBLIC-IP` in `firewall-config.xml`: find and replace `5.5.5.5/32` with your actual public IP (same as `my_public_ip` in `terraform.tfvars`), then save the file.
-7. Import the XML configuration via the GUI at `https://<firewall_mgmt_public_ip>`: log in with username `admin` and the default password `2Plus2cabbage!` (or new password if changed), go to **Device > Setup > Operations > Import Named Configuration Snapshot**, upload your XML file, load, and commit.
+7. Import the XML configuration via the GUI at `https://<firewall_mgmt_public_ip>`: log in with username `admin` and the password set in Step 5, go to **Device > Setup > Operations > Import Named Configuration Snapshot**, upload your XML file, load, and commit (note that after the commit, the admin password will be reset to `2Plus2cabbage!`).
 8. Access the Windows Server via RDP: ensure your XML configuration includes a NAT rule to forward RDP to `10.1.1.20`, use the untrust public IP (`terraform output firewall_untrust_public_ip`), username `opc`, and initial password from OCI Console (**Compute > Instances > [select instance] > Resources > Instance Access > Show Initial Password**).
 9. Verify connectivity from the Windows Server: open Command Prompt or PowerShell, test internet access with `ping google.com`, confirm connectivity is successful.
 10. To remove all resources, run `terraform destroy` (type `yes`).

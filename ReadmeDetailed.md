@@ -54,16 +54,15 @@ Before starting, ensure you have the following:
 4. Click **Edit**, then under **Route Table**, select the trust route table (`rt-<environment_name>-<location>-trust-001`, e.g., `rt-cabbage-usashburn-trust-001`).
 5. Save changes to route trust subnet traffic through the firewall’s trust interface (`10.1.1.10`).
 
-### Step 5: SSH to the Firewall Management Interface and Optionally Change Admin Password
+### Step 5: SSH to the Firewall Management Interface and Change Admin Password
 1. Open a terminal on your machine.
 2. Use the SSH key and management public IP to connect: `ssh -i <private-key-file> admin@<firewall_mgmt_public_ip>` (e.g., `ssh -i palo_alto_key admin@129.213.45.67`).
 3. You should now be logged into the firewall CLI as the `admin` user.
-4. (Optional) To change the admin password for GUI access:
-   - Enter configuration mode: `configure`.
-   - Change the admin password: `set mgt-config users admin password`.
-   - Enter a new password when prompted, then confirm it.
-   - Commit the change: `commit`.
-   - Exit configuration mode: `exit`.
+4. Enter configuration mode: `configure`.
+5. Change the admin password for GUI access: `set mgt-config users admin password`.
+6. Enter a new password when prompted, then confirm it.
+7. Commit the change: `commit`.
+8. Exit configuration mode: `exit`.
 
 ### Step 6: Update MY-PUBLIC-IP in the XML Configuration File
 1. Open the `firewall-config.xml` file in your editor (e.g., VSCode).
@@ -74,11 +73,11 @@ Before starting, ensure you have the following:
 
 ### Step 7: Import the XML Configuration to the Firewall via GUI
 1. Access the firewall GUI via HTTPS: `https://<firewall_mgmt_public_ip>` in your browser (e.g., `https://129.213.45.67`).
-2. Log in with username `admin` and the default password `2Plus2cabbage!` (or the new password if you changed it in Step 5).
+2. Log in with username `admin` and the password you set in Step 5.
 3. Go to **Device > Setup > Operations > Import Named Configuration Snapshot**.
 4. Click **Choose File**, select your updated XML configuration file (e.g., `firewall-config.xml`), and click **OK**.
 5. Click **Load** to apply the configuration.
-6. Click **Commit** in the top-right corner to save the changes.
+6. Click **Commit** in the top-right corner to save the changes. Note that after the commit, the admin password will be reset to `2Plus2cabbage!` due to the imported XML configuration.
 
 ### Step 8: Access the Windows Server via RDP
 1. Ensure your XML configuration in Step 7 includes a NAT rule to forward RDP traffic to the Windows Server (e.g., source `any`, destination `<firewall_untrust_public_ip>`, service RDP TCP 3389, translated destination `10.1.1.20`).
