@@ -25,7 +25,7 @@ Before starting, ensure you have the following:
    - `compartment_ocid`: Replace `"<your-compartment-id>"` with your OCI compartment OCID (e.g., `ocid1.compartment...`).
    - `region`: Replace `"<your-region>"` with your OCI region (e.g., `us-ashburn-1`).
    - `environment_name`: Replace `"<your-environment-name>"` with your environment name (e.g., `cabbage`).
-   - `location`: Replace `"<your-location>"` with your location identifier (e.g., `usashburn`).
+   - `location`: Replace `"<your-location>"` with your location identifier (e.g., `eastus`).
    - `my_public_ip`: Replace `"<your-public-ip>"` with your public IP for SSH/HTTPS access (e.g., `203.0.113.5/32`).
    - `firewall_image_ocid`: Replace `"<your-firewall-image-ocid>"` with the Palo Alto VM-Series image OCID from OCI Marketplace (e.g., `ocid1.image...`).
    - `ssh_public_key`: Replace `"<your-ssh-public-key>"` with your SSH public key (e.g., content of `palo_alto_key.pub`, such as `ssh-rsa AAAAB3NzaC1yc2E...`).
@@ -43,15 +43,15 @@ Before starting, ensure you have the following:
    - `firewall_untrust_public_ip`: Public IP of the firewall’s untrust interface (e.g., `150.136.200.108`) for potential NAT setup.
 2. Alternatively, find the public IPs in the OCI Console:
    - Go to **Compute > Instances**.
-   - Locate the instance named `fw-<environment_name>-<location>-001` (e.g., `fw-cabbage-usashburn-001`).
+   - Locate the instance named `fw-<environment_name>-<location>-001` (e.g., `fw-cabbage-eastus-001`).
    - Note the "Public IP" in the details pane for the management interface.
    - Under **Resources > Attached VNICs**, find the untrust VNIC (`vnic-<environment_name>-<location>-untrust`) and note its public IP.
 
 ### Step 4: Manually Associate the Trust Route Table
 1. Go to the OCI Console: **Networking > Virtual Cloud Networks**.
-2. Select your VCN (`vcn-<environment_name>-<location>-001`, e.g., `vcn-cabbage-usashburn-001`).
-3. Under **Resources**, select **Subnets**, then click on the trust subnet (`snet-<environment_name>-<location>-trust-001`, e.g., `snet-cabbage-usashburn-trust-001`).
-4. Click **Edit**, then under **Route Table**, select the trust route table (`rt-<environment_name>-<location>-trust-001`, e.g., `rt-cabbage-usashburn-trust-001`).
+2. Select your VCN (`vcn-<environment_name>-<location>-001`, e.g., `vcn-cabbage-eastus-001`).
+3. Under **Resources**, select **Subnets**, then click on the trust subnet (`snet-<environment_name>-<location>-trust-001`, e.g., `snet-cabbage-eastus-trust-001`).
+4. Click **Edit**, then under **Route Table**, select the trust route table (`rt-<environment_name>-<location>-trust-001`, e.g., `rt-cabbage-eastus-trust-001`).
 5. Save changes to route trust subnet traffic through the firewall’s trust interface (`10.1.1.10`).
 
 ### Step 5: SSH to the Firewall Management Interface and Change Admin Password
@@ -94,9 +94,9 @@ Before starting, ensure you have the following:
 ### Step 10: Clean Up Resources
 1. Reset the trust subnet route table to default in the OCI Console to ensure Terraform can destroy the project (Terraform will fail if the manual change from Step 4 is left in place):
    - Go to **Networking > Virtual Cloud Networks**.
-   - Select your VCN (`vcn-<environment_name>-<location>-001`, e.g., `vcn-cabbage-usashburn-001`).
-   - Under **Resources**, select **Subnets**, then click on the trust subnet (`snet-<environment_name>-<location>-trust-001`, e.g., `snet-cabbage-usashburn-trust-001`).
-   - Click **Edit**, then under **Route Table**, select the default route table for the VCN (named `Default Route Table for vcn-<environment_name>-<location>-001`, e.g., `Default Route Table for vcn-cabbage-usashburn-001`).
+   - Select your VCN (`vcn-<environment_name>-<location>-001`, e.g., `vcn-cabbage-eastus-001`).
+   - Under **Resources**, select **Subnets**, then click on the trust subnet (`snet-<environment_name>-<location>-trust-001`, e.g., `snet-cabbage-eastus-trust-001`).
+   - Click **Edit**, then under **Route Table**, select the default route table for the VCN (named `Default Route Table for vcn-<environment_name>-<location>-001`, e.g., `Default Route Table for vcn-cabbage-eastus-001`).
    - Save changes to remove the association with the trust route table.
 2. In the terminal, run `terraform destroy` to remove all resources. Type `yes` to confirm (takes about 2-5 minutes).
 3. Verify in the OCI Console that all resources (VCN, subnets, instances) are deleted.
