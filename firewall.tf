@@ -1,6 +1,6 @@
                                                                                                                                                                                       # Creates the Palo Alto firewall instance with the primary VNIC in the management subnet
 resource "oci_core_instance" "firewall_instance" {
-  availability_domain      = "gIaz:US-ASHBURN-AD-1"                                                                                                                                   # Availability domain for the firewall
+  availability_domain      = "reie:US-ASHBURN-AD-1"                                                                                                                                   # Availability domain for the firewall
   compartment_id           = var.compartment_ocid                                                                                                                                     # Compartment for the firewall
   shape                    = "VM.Standard3.Flex"                                                                                                                                      # Shape for the firewall
   shape_config {
