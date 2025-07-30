@@ -1,6 +1,6 @@
                                                                                                                         # Creates a Windows Server 2022 VM instance in OCI
 resource "oci_core_instance" "windows_instance" {
-  availability_domain        = "reie:US-ASHBURN-AD-1                                                                    # Availability domain for the VM
+  availability_domain        = "reie:US-ASHBURN-AD-1"                                                                    # Availability domain for the VM
   compartment_id             = var.compartment_ocid                                                                     # Compartment for the VM
   shape                      = "VM.Standard.E2.1"                                                                       # VM shape (compute resources)
   display_name               = "${local.windows_name_prefix}001"                                                        # Name of the VM
