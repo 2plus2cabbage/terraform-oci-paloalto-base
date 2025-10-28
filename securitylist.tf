@@ -1,77 +1,70 @@
-                                                                               # Creates a security list for the trust subnet with specific rules for internal traffic
+                                                                                                                                 # Creates a security list for the trust subnet allowing all traffic
 resource "oci_core_security_list" "trust_security_list" {
-  compartment_id           = var.compartment_ocid                              # Compartment for the security list
-  vcn_id                   = oci_core_vcn.cabbage_vcn.id                       # VCN ID for the security list
-  display_name             = "${local.security_list_name_prefix}-trust-001"    # Name of the trust security list
+  compartment_id = var.compartment_ocid                                                                                          # Compartment for the security list
+  vcn_id         = oci_core_vcn.cabbage_vcn.id                                                                                   # VCN to create the security list in
+  display_name   = "${local.security_list_name_prefix}-trust-001"                                                                # Name of the trust security list using local prefix
 
-                                                                               # Egress rule: Allow all outbound traffic from the trust subnet
   egress_security_rules {
-    protocol               = "all"                                             # Allow all protocols
-    destination            = "0.0.0.0/0"                                       # Allow to any destination
-    description            = "Allow all outbound traffic from trust subnet"
+    protocol     = "all"                                                                                                         # Allows all protocols for outbound traffic
+    destination  = "0.0.0.0/0"                                                                                                   # Allows traffic to any destination
+    description  = "Allow all outbound traffic from trust subnet"                                                                # Description of the egress rule
   }
 
-                                                                               # Ingress rule: Allow all inbound traffic to the trust subnet (controlled by firewall)
   ingress_security_rules {
-    protocol               = "all"                                             # Allow all protocols
-    source                 = "0.0.0.0/0"                                       # Allow from any source
-    description            = "Allow all inbound traffic to trust subnet (firewall-controlled)"
+    protocol     = "all"                                                                                                         # Allows all protocols for inbound traffic
+    source       = "0.0.0.0/0"                                                                                                   # Allows traffic from any source
+    description  = "Allow all inbound traffic to trust subnet controlled by Palo Alto firewall"                                  # Description of the ingress rule
   }
 }
 
-                                                                               # Creates a security list for the untrust subnet with open inbound traffic (firewall-controlled)
+                                                                                                                                 # Creates a security list for the untrust subnet allowing all traffic
 resource "oci_core_security_list" "untrust_security_list" {
-  compartment_id           = var.compartment_ocid                              # Compartment for the security list
-  vcn_id                   = oci_core_vcn.cabbage_vcn.id                       # VCN ID for the security list
-  display_name             = "${local.security_list_name_prefix}-untrust-001"  # Name of the untrust security list
+  compartment_id = var.compartment_ocid                                                                                          # Compartment for the security list
+  vcn_id         = oci_core_vcn.cabbage_vcn.id                                                                                   # VCN to create the security list in
+  display_name   = "${local.security_list_name_prefix}-untrust-001"                                                              # Name of the untrust security list using local prefix
 
-                                                                               # Egress rule: Allow all outbound traffic from the untrust subnet
   egress_security_rules {
-    protocol               = "all"                                             # Allow all protocols
-    destination            = "0.0.0.0/0"                                       # Allow to any destination
-    description            = "Allow all outbound traffic from untrust subnet"
+    protocol     = "all"                                                                                                         # Allows all protocols for outbound traffic
+    destination  = "0.0.0.0/0"                                                                                                   # Allows traffic to any destination
+    description  = "Allow all outbound traffic from untrust subnet"                                                              # Description of the egress rule
   }
 
-                                                                               # Ingress rule: Allow all inbound traffic to the untrust subnet (firewall-controlled)
   ingress_security_rules {
-    protocol               = "all"                                             # Allow all protocols
-    source                 = "0.0.0.0/0"                                       # Allow from any source
-    description            = "Allow all inbound traffic to untrust subnet (firewall-controlled)"
+    protocol     = "all"                                                                                                         # Allows all protocols for inbound traffic
+    source       = "0.0.0.0/0"                                                                                                   # Allows traffic from any source
+    description  = "Allow all inbound traffic to untrust subnet controlled by Palo Alto firewall"                                # Description of the ingress rule
   }
 }
 
-                                                                               # Creates a security list for the management subnet with specific rules for SSH and SSL
+                                                                                                                                 # Creates a security list for the management subnet restricting access to your IP
 resource "oci_core_security_list" "mgmt_security_list" {
-  compartment_id           = var.compartment_ocid                              # Compartment for the security list
-  vcn_id                   = oci_core_vcn.cabbage_vcn.id                       # VCN ID for the security list
-  display_name             = "${local.security_list_name_prefix}-mgmt-001"     # Name of the management security list
+  compartment_id = var.compartment_ocid                                                                                          # Compartment for the security list
+  vcn_id         = oci_core_vcn.cabbage_vcn.id                                                                                   # VCN to create the security list in
+  display_name   = "${local.security_list_name_prefix}-mgmt-001"                                                                 # Name of the management security list using local prefix
 
-                                                                               # Egress rule: Allow all outbound traffic from the management subnet
   egress_security_rules {
-    protocol               = "all"                                             # Allow all protocols
-    destination            = "0.0.0.0/0"                                       # Allow to any destination
-    description            = "Allow all outbound traffic from management subnet"
+    protocol     = "all"                                                                                                         # Allows all protocols for outbound traffic
+    destination  = "0.0.0.0/0"                                                                                                   # Allows traffic to any destination
+    description  = "Allow all outbound traffic from management subnet"                                                           # Description of the egress rule
   }
 
-                                                                               # Ingress rule: Allow SSL (TCP 443) from your public IP to the firewall management interface
   ingress_security_rules {
-    protocol               = "6"                                               # TCP protocol
-    source                 = var.my_public_ip                                  # Source IP for SSL access
+    protocol     = "6"                                                                                                           # TCP protocol for HTTPS traffic
+    source       = var.my_public_ip                                                                                              # Restricts source to your public IP only
     tcp_options {
-      min                  = 443                                               # Minimum port (SSL)
-      max                  = 443                                               # Maximum port (SSL)
+      min        = 443                                                                                                           # HTTPS port for web management interface
+      max        = 443                                                                                                           # HTTPS port for web management interface
     }
-    description            = "SSL from your IP to firewall management"
+    description  = "Allow HTTPS from your IP to firewall management interface"                                                   # Description of the HTTPS ingress rule
   }
 
-                                                                               # Ingress rule: Allow SSH (TCP 22) from your public IP to the firewall management interface
   ingress_security_rules {
-    protocol               = "6"                                               # TCP protocol
-    source                 = var.my_public_ip                                  # Source IP for SSH access
+    protocol     = "6"                                                                                                           # TCP protocol for SSH traffic
+    source       = var.my_public_ip                                                                                              # Restricts source to your public IP only
     tcp_options {
-      min                  = 22                                                # Minimum port (SSH)
-      max                  = 22                                                # Maximum port (SSH)
+      min        = 22                                                                                                            # SSH port for command line management
+      max        = 22                                                                                                            # SSH port for command line management
     }
-    description            = "SSH from your IP to firewall management"
+    description  = "Allow SSH from your IP to firewall management interface"                                                     # Description of the SSH ingress rule
   }
 }
