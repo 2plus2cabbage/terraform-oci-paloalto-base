@@ -46,17 +46,19 @@ The project is split into multiple files to illustrate modularity and keep separ
 
 ## SSH Key Setup
 Before deployment, generate an SSH key pair for Palo Alto firewall access:
-```bash
-# Generate a new SSH key pair
-ssh-keygen -t rsa -b 4096 -C "palo-admin" -f ~/.ssh/palo_alto_key
 
-# This creates two files:
-# - palo_alto_key (private key - keep secure)
-# - palo_alto_key.pub (public key - used in Terraform)
+**Generate a new SSH key pair:**
+```
+ssh-keygen -t rsa -b 4096 -C "palo-admin" -f ~/.ssh/palo_alto_key
 ```
 
+This creates two files:
+- `palo_alto_key` (private key - keep secure)
+- `palo_alto_key.pub` (public key - used in Terraform)
+
 Ensure your public key is in OpenSSH format (single line starting with `ssh-rsa`). If you have an SSH2 RFC4716 format key (with `BEGIN SSH2 PUBLIC KEY` headers), convert it:
-```bash
+
+```
 ssh-keygen -i -f your_key.pub > your_key_openssh.pub
 ```
 
@@ -92,13 +94,15 @@ ssh-keygen -i -f your_key.pub > your_key_openssh.pub
 7. **Access the Palo Alto Firewall**:
    - Via SSH: `ssh -i ~/.ssh/palo_alto_key admin@<firewall_mgmt_public_ip>`
    - Set a new admin password from SSH:
-```bash
-     configure
-     set mgt-config users admin password
-     # Enter new password when prompted (twice for confirmation)
-     commit
-     exit
-```
+   ```
+   configure
+   set mgt-config users admin password
+   ```
+   Enter new password when prompted (twice for confirmation)
+   ```
+   commit
+   exit
+   ```
    - Via Web UI: Open `https://<firewall_mgmt_public_ip>` in a browser and log in with username `admin` and the password you just set
 
 8. **Import the firewall configuration**:
@@ -122,7 +126,13 @@ ssh-keygen -i -f your_key.pub > your_key_openssh.pub
    - Test internet access with `ping google.com`
    - Confirm connectivity is successful through the Palo Alto firewall
 
-11. To remove all resources, run `terraform destroy` and type `yes` when prompted.
+11. To remove all resources:
+   - **First, revert the trust subnet route table** to prevent destroy errors:
+     - In the OCI Console, go to **Networking > Virtual Cloud Networks > [your VCN] > Subnets > [trust subnet]**
+     - Click **Edit**
+     - Change the **Route Table** to the VCN's **Default Route Table**
+     - Click **Save Changes**
+   - Run `terraform destroy` and type `yes` when prompted
 
 ## Firewall Configuration Notes
 - The Palo Alto firewall requires initial configuration after deployment
@@ -149,6 +159,7 @@ ssh-keygen -i -f your_key.pub > your_key_openssh.pub
 - **Windows VM cannot reach internet**: Check Palo Alto firewall security policies and NAT rules
 - **Terraform apply fails with image subscription errors**: Ensure you have accepted the Palo Alto Marketplace terms in OCI Console
 - **Route creation fails**: The trust route uses a data source for the firewall trust interface private IP, which creates an implicit dependency
+- **Terraform destroy fails**: You must revert the trust subnet route table to the default before destroying (see step 11 above)
 
 ## Potential Costs and Licensing
 - **OCI Compute Costs**: 
